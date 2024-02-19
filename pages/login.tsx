@@ -46,7 +46,7 @@ export function useUser() {
 
 const Login = () => {
   const router = useRouter();
-  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
+  // const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth);
   const {
     register,
     handleSubmit,
@@ -76,11 +76,12 @@ const Login = () => {
   const onSubmit: SubmitHandler<loggedData> = async (data) => {
     try {
       const userCredential = await signInWithEmailAndPassword(
+        auth,
         data.email,
         data.password
       );
 
-      const user = userCredential;
+      const user = userCredential.user;
       if (window !== undefined) {
         // onAuthStateChanged(auth, (user) => {
         //   if (user) {
@@ -90,8 +91,7 @@ const Login = () => {
         //   }
         // });
 
-        window.localStorage.setItem("uid", JSON.stringify(user));
-        localStorage.setItem("loginstatus", "true");
+        window.localStorage.setItem("uid", user?.uid);
         toast.success("You are logged in");
 
         console.log("User created:", user);
