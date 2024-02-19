@@ -21,7 +21,7 @@ import {
 import { auth } from "@/firebase";
 import { toast } from "sonner";
 // import { User as FirebaseUser, signOut as firebaseSignOut, browserLocalPersistence } from "firebase/auth";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+// import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import assets from "@/json/assets";
 
 interface loggedData {

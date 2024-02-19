@@ -18,6 +18,7 @@ import {
   Grid,
   Paper,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import {
@@ -85,7 +86,8 @@ interface TldrawWrapperProps {
 
 type snapsType={
   id:string,
-  data:StoreSnapshot<TLRecord>
+  data:StoreSnapshot<TLRecord>,
+  name: string
 } 
 
 const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
@@ -97,7 +99,7 @@ const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
   });
   const [editor, setEditor] = useState<Editor | null>(null);
   const [savedSnapshopts, setSavedSnapShot] = useState<snapsType[]>([]);
-
+  const [name,setName]=useState('')
 
   const handleConfigChange = (key: keyType) => {
     setConfig({
@@ -115,6 +117,7 @@ const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
         {
           id: dayjs().toISOString(),
           data: snapshot,
+          name: name
         },
       ]);
     }
@@ -130,12 +133,14 @@ const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
         {
           id: dayjs().toISOString(),
           data: snapshot,
+          name: name
         },
       ]);
 
       try {
         await addDoc(collection(db, "drawDatabase"), {
           snapshot,
+          name,
           createdAt: serverTimestamp(),
         });
 
@@ -156,6 +161,7 @@ const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
         {
           id: dayjs().toISOString(),
           data: initialSnapshot.snapshot,
+          name: name
         }
       ])
 
@@ -230,7 +236,7 @@ const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
                   >
                     {savedSnapshopts?.map((snaps: any, index: number) => (
                       <Chip
-                        label={`Project ${index + 1}`}
+                        label={<TextField value={name} onChange={(e)=>setName(e.target.value)}/>}
                         // dayjs(snaps.id).format("DD/MM/YYYY HH:mm:ss")
                         variant="outlined"
                         color="primary"
@@ -238,6 +244,7 @@ const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
                           setConfig({
                             ...config,
                             snapshot: snaps.data,
+                            
                           });
                           // router.push(`${router.pathname}/edit?snapshot=${snaps.id}`);
                       
