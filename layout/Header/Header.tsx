@@ -16,7 +16,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase";
-import { deleteCookie } from "cookies-next";
 
 const pages = ["Signup", "Login"];
 const privatePages = ["Home", "Logout"];
@@ -51,7 +50,6 @@ function Header() {
   const handleLogout = () => {
     localStorage.removeItem("uid");
     setLoggedIn(false);
-    // deleteCookie("logged")
     router.push("/login");
   };
 

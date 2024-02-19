@@ -19,7 +19,6 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "@/firebase";
-import { setCookie } from "cookies-next";
 import { toast } from "sonner";
 // import { User as FirebaseUser, signOut as firebaseSignOut, browserLocalPersistence } from "firebase/auth";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
@@ -96,7 +95,7 @@ const Login = () => {
         toast.success("You are logged in");
 
         console.log("User created:", user);
-        // setCookie('logged', true);
+
         router.push("/");
       }
     } catch (error: any) {
