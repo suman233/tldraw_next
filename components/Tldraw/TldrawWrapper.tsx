@@ -27,6 +27,8 @@ import { db, storage } from "@/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
+import { toast } from 'sonner';
+
 // import {TLDrawColor} from '@/config/';
 type keyType = "inferDarkMode" | "hideUi";
 
@@ -124,7 +126,9 @@ const TldrawWrapper = ({ allDrawings }: any) => {
           createdAt: serverTimestamp(),
         });
 
-        alert("drawing created successfully");
+        toast.success('Drawing created Successfully')
+        console.log('drawing',snapshot);
+        
       } catch (error) {
         console.error("Error creating drawing:", error);
         alert("Failed to create drawings");

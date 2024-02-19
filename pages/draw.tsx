@@ -1,4 +1,3 @@
-// import TldrawWrapper from "@/components/Tldraw/TldrawWrapper";
 import { Box, Button, Card, Container, Grid, TextField } from "@mui/material";
 import { Typography } from "@mui/material/styles/createTypography";
 import dynamic from "next/dynamic";
@@ -29,14 +28,8 @@ export function toBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   });
 }
 
-const Draw = () => {
-  // const editor=useEditor()
-  // const handleSaveSnapShot = () => {
-  //   const snap = editor.store.getSnapshot();
-  //   console.log("pic", snap);
-
-  //   // editor.store.loadSnapshot()
-  // };
+const Draw = ({}) => {
+ 
   const [drawing, setDrawing] = useState<CanvasDrawImage | null>(null);
 
   const saveDrawingToFirebase = async () => {

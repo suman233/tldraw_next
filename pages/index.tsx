@@ -58,7 +58,7 @@ interface Props {
 
 export default function Home({ allDrawings }: Props) {
   const router = useRouter();
-  const auth=getAuth()
+  const auth = getAuth();
   // const user=useUser()
 
   const [title, setTitle] = useState<string>("");
@@ -115,25 +115,33 @@ export default function Home({ allDrawings }: Props) {
       <Container>
         {/* <Typography sx={{ my: 5, textAlign: "center" }}>Home Page</Typography> */}
 
-       
-        <Typography variant="h3" sx={{ my: 2, textAlign:'center' }}>
-          {`${auth.currentUser?.email?.charAt(0).toUpperCase()}`}{`${auth.currentUser?.email?.slice(1,5)}`} Drawings
+        <Typography variant="h3" sx={{ my: 2, textAlign: "center" }}>
+          {`${auth.currentUser?.email?.charAt(0).toUpperCase()}`}
+          {`${auth.currentUser?.email?.slice(1, 5)}`}'s Drawings
         </Typography>
 
         <Box></Box>
         <Grid container spacing={2}>
-        <Card sx={{width:'380px'}}>
-                <CardContent>
-                <Link href={`/draw`} style={{textDecoration:'none'}}>
-
-                 <Box sx={{border:'1px solid black', height:'200px', position:'relative', my:2}}>
-                  <Typography sx={{position:'absolute', top:70, left:100}}>Add new Project <br />&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+</Typography>
-                 </Box>
-                  </Link>
-                  <Typography variant="h6"></Typography>
-                 
-                </CardContent>
-              </Card>
+          <Card sx={{ width: "380px" }}>
+            <CardContent>
+              <Link href={`/draw`} style={{ textDecoration: "none" }}>
+                <Box
+                  sx={{
+                    border: "1px solid black",
+                    height: "200px",
+                    position: "relative",
+                    my: 2,
+                  }}
+                >
+                  <Typography sx={{ position: "absolute", top: 70, left: 100 }}>
+                    Add New Project (+)
+                  </Typography>
+                  {/* <br />&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+</Typography> */}
+                </Box>
+              </Link>
+              <Typography variant="h6"></Typography>
+            </CardContent>
+          </Card>
           {allDrawings.map((picture, idx) => (
             <Grid item key={idx} xs={12} sm={6} md={4}>
               <Card>
@@ -151,7 +159,7 @@ export default function Home({ allDrawings }: Props) {
                     Created at: {new Date(picture.createdAt).toLocaleString()}
                   </Typography>
                   <Link href={`/single/${picture.id}`}>
-                    <Button variant="contained">Read More</Button>
+                    <Button variant="contained">Show</Button>
                   </Link>
                 </CardContent>
               </Card>

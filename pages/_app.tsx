@@ -10,11 +10,18 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import dynamic from "next/dynamic";
+import { Toaster } from "sonner";
 
-const Wrapper=dynamic(()=> import('@/layout/Wrapper/Wrapper'), {ssr: false})
+const Wrapper = dynamic(() => import("@/layout/Wrapper/Wrapper"), {
+  ssr: false,
+});
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Wrapper>
+      <Toaster
+          richColors
+          dir="ltr"
+      />
       <Component {...pageProps} />
     </Wrapper>
   );

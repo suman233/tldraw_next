@@ -12,6 +12,7 @@ import {
 } from "firebase/auth";
 import { auth } from "@/firebase";
 import { setCookie } from 'cookies-next';
+import { toast } from "sonner";
 // import { User as FirebaseUser, signOut as firebaseSignOut, browserLocalPersistence } from "firebase/auth";
 
 interface loggedData {
@@ -62,6 +63,8 @@ const Login = () => {
         //   }
         // });
         window.localStorage.setItem("uid", user.uid);
+        toast.success('You are logged in')
+        
         console.log("User created:", user);
         // setCookie('logged', true);
         router.push("/");
@@ -69,6 +72,7 @@ const Login = () => {
     } catch (error: any) {
       console.error("Error creating user:", error);
       alert(error.message);
+      toast.error('Email id or password not found')
     }
   };
 

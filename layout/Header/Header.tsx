@@ -18,7 +18,6 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase";
 import { deleteCookie } from "cookies-next";
 
-
 const pages = ["Signup", "Login"];
 const privatePages = ["Home", "Logout"];
 const settings = ["Profile", "Dashboard", "Logout"];
@@ -100,7 +99,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            TLDRAW
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -114,31 +113,75 @@ function Header() {
             >
               <MenuIcon />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+            {!loggedIn ? (
+              <>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElNav}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
+                  sx={{
+                    display: { xs: "block", md: "none" },
+                  }}
+                >
+                  {pages.map((page) => (
+                    <MenuItem key={page} onClick={handleCloseNavMenu}>
+                      <Typography textAlign="center">{page}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorElNav}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "left",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left",
+                  }}
+                  open={Boolean(anchorElNav)}
+                  onClose={handleCloseNavMenu}
+                  sx={{
+                    display: { xs: "block", md: "none" },
+                  }}
+                >
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Link href={"/"} style={{ textDecoration: "none" }}>
+                      <Typography textAlign="center">Home</Typography>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Link href={"/draw"} style={{ textDecoration: "none" }}>
+                      <Typography textAlign="center">Draw</Typography>
+                    </Link>
+                  </MenuItem>
+                  <MenuItem onClick={handleCloseNavMenu}>
+                    <Link href={"/login"} style={{ textDecoration: "none" }}>
+                      <Typography textAlign="center" onClick={handleLogout}>
+                        Logout
+                      </Typography>
+                    </Link>
+                  </MenuItem>
+                </Menu>
+              </>
+            )}
           </Box>
+
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
             variant="h5"
@@ -156,7 +199,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            TLDRAW
           </Typography>
           {!loggedIn ? (
             <>
@@ -188,11 +231,11 @@ function Header() {
                     Home
                   </Button>
                 </Link>
-                <Link href={"/dashboard/${slug}"} style={{ textDecoration: "none" }}>
-                  <Button
-                    
-                    sx={{ my: 2, color: "white", display: "block" }}
-                  >
+                <Link
+                  href={"/dashboard/${slug}"}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Button sx={{ my: 2, color: "white", display: "block" }}>
                     Dashboard
                   </Button>
                 </Link>
@@ -218,7 +261,7 @@ function Header() {
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
-                      alt="Remy Sharp"
+                      alt="Sharp"
                       src="/static/images/avatar/2.jpg"
                     />
                   </IconButton>

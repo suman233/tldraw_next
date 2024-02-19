@@ -33,6 +33,11 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
+import { toast } from "sonner";
+// import 'core-js/es/array';
+
+// const SingleDrawingWrapper = dynamic( ()=> import('../../components/Tldraw/Tldrwcom/Tldrawwrappercom'), {ssr: false})
 
 type keyType = "inferDarkMode" | "hideUi";
 
@@ -74,9 +79,15 @@ const components: TLEditorComponents = {
     return <div>Loading</div>;
   },
 };
+
+
 const Single = () => {
   const router = useRouter();
   const { slug } = router.query;
+
+
+  console.log('prop', slug);
+  
 
   const [config, setConfig] = useState({
     inferDarkMode: false,
@@ -112,7 +123,7 @@ const Single = () => {
         createdAt: serverTimestamp(),
       });
 
-      alert("drawing created successfully");
+      toast.success('Drawing created successfully')
     } catch (error) {
       console.error("Error creating drawing:", error);
       alert("Failed to create drawings");
@@ -121,7 +132,7 @@ const Single = () => {
 
   useEffect(() => {
     const fetchDrawings = async () => {
-      if (typeof slug === "string") {
+     if(typeof slug==='string'){
         const drawDoc = doc(db, "drawDatabase", slug);
         const docSnap = await getDoc(drawDoc);
         console.log(docSnap?.id, "docSnap test");
@@ -161,12 +172,6 @@ const Single = () => {
         <Grid container>
           <Grid item md={2}>
             <Stack p={1} direction="column" spacing={1}>
-              <Button
-                variant="outlined"
-                onClick={() => handleConfigChange("inferDarkMode")}
-              >
-                <span>Toggle Darkmode</span>
-              </Button>
 
               <Button
                 variant="outlined"
@@ -186,10 +191,9 @@ const Single = () => {
               inferDarkMode={config.inferDarkMode}
               components={components}
               onMount={(e) => setEditor(e)}
-              
 
-              // onUiEvent={(e) => console.log(e, "ui events")}
             />
+            {/* <SingleDrawingWrapper data={slug} drawdata={savedSnapshopts} save={handleSaveSnapshot}/> */}
           </Grid>
         </Grid>
       </div>
