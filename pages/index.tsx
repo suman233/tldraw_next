@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardContent,
   CardMedia,
   Container,
@@ -124,43 +125,37 @@ export default function Home({ allDrawings }: Props) {
         <Grid container spacing={2}>
           <Card sx={{ width: "380px" }}>
             <CardContent>
-              <Link href={`/draw`} style={{ textDecoration: "none" }}>
-                <Box
-                  sx={{
-                    border: "1px solid black",
-                    height: "200px",
-                    position: "relative",
-                    my: 2,
-                  }}
-                >
-                  <Typography sx={{ position: "absolute", top: 70, left: 100 }}>
+              <CardActionArea component={Link} href={`/draw`}>
+                <Box sx={{ height: "200px", border: "1px solid black", mt: 2 }}>
+                  <Typography variant="h6" sx={{ textAlign: "center", mt: 10 }}>
                     Add New Project (+)
                   </Typography>
-                  {/* <br />&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+</Typography> */}
                 </Box>
-              </Link>
-              <Typography variant="h6"></Typography>
+              </CardActionArea>
+
+              {/* <br />&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+</Typography> */}
+
             </CardContent>
           </Card>
           {allDrawings.map((picture, idx) => (
             <Grid item key={idx} xs={12} sm={6} md={4}>
               <Card>
                 <CardContent>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={picture.imageUrl}
-                    alt=""
-                    style={{ maxWidth: "100%" }}
-                  />
+                  <CardActionArea
+                    component={Link}
+                    href={`/single/${picture.id}`}
+                  >
+                    <Box sx={{ height: "200px", border: "1px solid black" }}>
+                      <Typography
+                        variant="h6"
+                        sx={{ textAlign: "center", mt: 10 }}
+                      >{`Project ${idx + 1}`}</Typography>
+                    </Box>
+                  </CardActionArea>
 
-                  <Typography variant="h6">{`Project ${idx + 1}`}</Typography>
                   <Typography>
                     Created at: {new Date(picture.createdAt).toLocaleString()}
                   </Typography>
-                  <Link href={`/single/${picture.id}`}>
-                    <Button variant="contained">Show</Button>
-                  </Link>
                 </CardContent>
               </Card>
             </Grid>

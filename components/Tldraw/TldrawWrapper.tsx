@@ -1,12 +1,14 @@
 import {
   DefaultColorStyle,
   Editor,
+  StoreSnapshot,
   TLEditorComponents,
+  TLRecord,
   Tldraw,
   toDomPrecision,
   useTransform,
 } from "@tldraw/tldraw";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import {
   Box,
@@ -71,7 +73,22 @@ const components: TLEditorComponents = {
   },
 };
 
-const TldrawWrapper = ({ allDrawings }: any) => {
+
+export interface FirebaseSnapshot {
+  snapshot:StoreSnapshot<TLRecord> ,
+  createdAt:string
+}
+
+interface TldrawWrapperProps {
+   initialSnapshot?:FirebaseSnapshot
+}
+
+type snapsType={
+  id:string,
+  data:StoreSnapshot<TLRecord>
+} 
+
+const TldrawWrapper = ({ initialSnapshot }: TldrawWrapperProps) => {
   const router =useRouter()
   const [config, setConfig] = useState({
     inferDarkMode: false,
@@ -79,7 +96,8 @@ const TldrawWrapper = ({ allDrawings }: any) => {
     snapshot: undefined,
   });
   const [editor, setEditor] = useState<Editor | null>(null);
-  const [savedSnapshopts, setSavedSnapShot] = useState<any>([]);
+  const [savedSnapshopts, setSavedSnapShot] = useState<snapsType[]>([]);
+
 
   const handleConfigChange = (key: keyType) => {
     setConfig({
@@ -90,30 +108,25 @@ const TldrawWrapper = ({ allDrawings }: any) => {
 
   const handleStorage = async () => {
     const snapshot = editor?.store.getSnapshot();
-    setSavedSnapShot([
-      ...savedSnapshopts,
-      {
-        id: dayjs().toISOString(),
-        data: snapshot,
-      },
-    ]);
+
+    if(!!snapshot){
+      setSavedSnapShot([
+        ...savedSnapshopts,
+        {
+          id: dayjs().toISOString(),
+          data: snapshot,
+        },
+      ]);
+    }
+
   };
-  // const handleColorChange = (color: string) => {
-  //   editor?.setCurrentTool("draw");
-  //   // StyleProp.defineEnum("tldraw:color", {
-  //   //   defaultValue: color.hex,
-  //   //   values: [color.hex]
-  //   // });
-  //   editor?.setStyleForNextShapes(DefaultColorStyle, color, {
-  //     squashing: true,
-  //   });
-  // };
+  
 
   const handleSaveSnapshot = async () => {
     const snapshot = editor?.store.getSnapshot();
     // if (editor !== null) alert("Please draw something");
       setSavedSnapShot([
-        ...savedSnapshopts,
+        ...savedSnapshopts as any,
         {
           id: dayjs().toISOString(),
           data: snapshot,
@@ -122,7 +135,7 @@ const TldrawWrapper = ({ allDrawings }: any) => {
 
       try {
         await addDoc(collection(db, "drawDatabase"), {
-          snapshot: JSON.stringify(snapshot),
+          snapshot,
           createdAt: serverTimestamp(),
         });
 
@@ -135,6 +148,23 @@ const TldrawWrapper = ({ allDrawings }: any) => {
       }
     
   };
+
+  useEffect(()=>{
+    if(!!initialSnapshot && editor){
+      setSavedSnapShot([
+       
+        {
+          id: dayjs().toISOString(),
+          data: initialSnapshot.snapshot,
+        }
+      ])
+
+      editor?.store.loadSnapshot(initialSnapshot.snapshot)
+
+
+    }
+    console.log(initialSnapshot,"init")
+  },[initialSnapshot?.snapshot,initialSnapshot?.createdAt,JSON.stringify(initialSnapshot?.snapshot),editor])
 
   return (
     <div>
@@ -175,6 +205,7 @@ const TldrawWrapper = ({ allDrawings }: any) => {
               inferDarkMode={config.inferDarkMode}
               components={components}
               onMount={(e) => setEditor(e)}
+              
               // onUiEvent={(e) => console.log(e, "ui events")}
             />
           </Grid>
@@ -209,8 +240,8 @@ const TldrawWrapper = ({ allDrawings }: any) => {
                             snapshot: snaps.data,
                           });
                           // router.push(`${router.pathname}/edit?snapshot=${snaps.id}`);
-                          router.push(`/`);
-                          editor?.store?.loadSnapshot(JSON.parse(snaps?.data));
+                      
+                          editor?.store?.loadSnapshot(snaps?.data);
                         }}
                       />
                     ))}

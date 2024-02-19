@@ -1,17 +1,11 @@
-import {
-  DefaultColorStyle,
-  Editor,
-  TLEditorComponents,
-  Tldraw,
-  toDomPrecision,
-  useTransform,
-} from "@tldraw/tldraw";
+
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import {
   Box,
   Button,
   Chip,
+  Container,
   Divider,
   Grid,
   Paper,
@@ -35,169 +29,73 @@ import {
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
-// import 'core-js/es/array';
 
-// const SingleDrawingWrapper = dynamic( ()=> import('../../components/Tldraw/Tldrwcom/Tldrawwrappercom'), {ssr: false})
+const TldrawWrapper = dynamic(
+  () => import("@/components/Tldraw/TldrawWrapper"),
+  {
+    ssr: false,
+  }
+);
+const fetchDrawings = async (slug:string) => {
+  if(typeof slug==='string'){
+     const drawDoc = doc(db, "drawDatabase", slug);
+     const docSnap = await getDoc(drawDoc);
+     console.log(docSnap?.id, "docSnap test");
+     if (docSnap.exists()) {
+        return docSnap.data();
+     }
+   }
+
+   return undefined
+ };
+
 
 type keyType = "inferDarkMode" | "hideUi";
 
-const components: TLEditorComponents = {
-  Brush: function MyBrush({ brush }) {
-    const rSvg = useRef<SVGSVGElement>(null);
 
-    useTransform(rSvg, brush.x, brush.y);
-
-    const w = toDomPrecision(Math.max(1, brush.w));
-    const h = toDomPrecision(Math.max(1, brush.h));
-
-    return (
-      <svg ref={rSvg} className="tl-overlays__item">
-        <rect
-          className="tl-brush"
-          stroke="red"
-          fill="none"
-          width={w}
-          height={h}
-        />
-      </svg>
-    );
-  },
-  Scribble: ({ scribble, opacity, color }) => {
-    return (
-      <svg className="tl-overlays__item">
-        <polyline
-          points={scribble.points.map((p) => `${p.x},${p.y}`).join(" ")}
-          stroke={color ?? "black"}
-          opacity={opacity ?? "1"}
-          fill="none"
-        />
-      </svg>
-    );
-  },
-  SnapIndicator: null,
-  LoadingScreen: () => {
-    return <div>Loading</div>;
-  },
-};
 
 
 const Single = () => {
   const router = useRouter();
   const { slug } = router.query;
+  const [snapshot,setSnapshot]=useState(undefined)
 
 
-  console.log('prop', slug);
+
   
+  const setData=async()=>{
+    const res=await fetchDrawings(slug as string)
 
-  const [config, setConfig] = useState({
-    inferDarkMode: false,
-    hideUi: false,
-    snapshot: undefined,
-  });
-  const [editor, setEditor] = useState<Editor | null>(null);
-  const [savedSnapshopts, setSavedSnapShot] = useState<any>([]);
+    setSnapshot(res as any)
 
-//   const pageId=editor?.getPageShapeIds()[0];
-  
-  const handleConfigChange = (key: keyType) => {
-    setConfig({
-      ...config,
-      [key]: !config[key],
-    });
-  };
 
-  const handleSaveSnapshot = async () => {
-    const snapshot = editor?.store.getSnapshot();
-    // if (editor !== null) alert("Please draw something");
-    setSavedSnapShot([
-      ...savedSnapshopts,
-      {
-        id: dayjs().toISOString(),
-        data: snapshot,
-      },
-    ]);
+  }
 
-    try {
-      await addDoc(collection(db, "drawDatabase"), {
-        snapshot: JSON.stringify(snapshot),
-        createdAt: serverTimestamp(),
-      });
-
-      toast.success('Drawing created successfully')
-    } catch (error) {
-      console.error("Error creating drawing:", error);
-      alert("Failed to create drawings");
-    }
-  };
 
   useEffect(() => {
-    const fetchDrawings = async () => {
-     if(typeof slug==='string'){
-        const drawDoc = doc(db, "drawDatabase", slug);
-        const docSnap = await getDoc(drawDoc);
-        console.log(docSnap?.id, "docSnap test");
-        if (docSnap.exists()) {
-          setSavedSnapShot([
-            ...savedSnapshopts,
-            {
-              id: docSnap.id,
-              data: JSON.parse(docSnap.data().snapshot),
-            },
-          ]);
-        }
-      }
-    };
 
-    fetchDrawings();
+    setData()
+
+    
   }, [slug]);
 
-  useEffect(() => {
-    if (savedSnapshopts.length > 0) {
-      const snapshot = savedSnapshopts[savedSnapshopts.length - 1].data;
-      editor?.store.loadSnapshot(snapshot);
-    }
-  }, [savedSnapshopts, editor]);
+
+
+ 
 
   return (
-    <div>
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          height: "80%",
-          width: "100%",
-          marginTop: "80px",
-        }}
-      >
-        <Grid container>
-          <Grid item md={2}>
-            <Stack p={1} direction="column" spacing={1}>
-
-              <Button
-                variant="outlined"
-                onClick={() => handleConfigChange("hideUi")}
-              >
-                <span>Show hide ui</span>
-              </Button>
-
-              <Button variant="outlined" onClick={() => handleSaveSnapshot()}>
-                <span>Save snapshots</span>
-              </Button>
-            </Stack>
+    <Container sx={{ my: 5 }}>
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          
+          <Grid item xs={8}>
+            {
+              !!snapshot && <TldrawWrapper initialSnapshot={snapshot} />
+            }
+            
           </Grid>
-          <Grid item md={10} height="80vh">
-            <Tldraw
-              hideUi={config.hideUi}
-              inferDarkMode={config.inferDarkMode}
-              components={components}
-              onMount={(e) => setEditor(e)}
-
-            />
-            {/* <SingleDrawingWrapper data={slug} drawdata={savedSnapshopts} save={handleSaveSnapshot}/> */}
-          </Grid>
+          
         </Grid>
-      </div>
-    </div>
+      </Container>
   );
 };
 
